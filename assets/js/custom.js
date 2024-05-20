@@ -24,12 +24,12 @@ $(document).ready(function () {
         row.className = "row align-items-center borderBottom1";
 
         var stateCol = document.createElement("div");
-        stateCol.className = "col-5 ps-0";
+        stateCol.className = "col-4 ";
         stateCol.innerHTML = `<p class="stateName">${item.State}</p>`;
         row.appendChild(stateCol);
 
         var partyCol = document.createElement("div");
-        partyCol.className = "col-3 px-0";
+        partyCol.className = "col-4 ";
         partyCol.innerHTML = `<div class=""><p class="partyName">${item.Party}</p></div>`;
         row.appendChild(partyCol);
 
@@ -39,10 +39,10 @@ $(document).ready(function () {
         statusImage.className = "img-fluid customStateImg1";
 
         if (item.Status.toLowerCase() === "leading") {
-          statusImage.src = "/assets/images/leadState.png"; // Path to leading image
+          statusImage.src = "assets/images/leadState.png"; // Path to leading image
           statusImage.alt = "Leading Icon";
         } else {
-          statusImage.src = "/assets/images/trailing.png"; // Path to trailing image
+          statusImage.src = "assets/images/trailing.png"; // Path to trailing image
           statusImage.alt = "Trailing Icon";
         }
         statusCol.appendChild(statusImage);
@@ -84,6 +84,22 @@ $(document).ready(function () {
       const winPercentage = (Won / total) * 100;
       const leadPercentage = (Lead / total) * 100;
 
+      if (Won === 0) {
+        $(".won").hide();
+        $(".wonBar").hide();
+      } else {
+        $(".won").show();
+        $(".wonBar").show();
+      }
+
+      if (Party === "OTHERS" && Won === 0) {
+        $(".won").hide();
+        $(".wonBar").hide();
+      } else {
+        $(".won").show();
+        $(".wonBar").show();
+      }
+
       let winColor = "";
       let leadColor = "bg-success"; // Default color for lead
 
@@ -91,35 +107,37 @@ $(document).ready(function () {
         winColor = "ndaBg";
       } else if (Party.toUpperCase() === "OTHERS") {
         winColor = "otherBg";
-      } else {
+      } else if (Party.trim().toUpperCase() === "INDIA") {
         winColor = "indiaBg";
+      } else {
+        winColor = "bg-danger"; // Default to "indiaBg" if no match is found
       }
 
       return `
-          <div class="col-md-12">
-            <div class="row g-3 align-items-center mb-3">
-              <div class="col-md-2 col-4">
-                <label for="${Party}" class="col-form-label progressLabel">${Party}</label>
-              </div>
-              <div class="col-md-10 col-8">
-                <div class="progress-stacked">
-                  <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="${winPercentage}" aria-valuemin="0" aria-valuemax="100" style="width: ${winPercentage}%">
-                    <div class="progress-bar ${winColor}">Won - ${Won}</div>
-                  </div>
-                  <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="${leadPercentage}" aria-valuemin="0" aria-valuemax="100" style="width: ${leadPercentage}%">
-                    <div class="progress-bar leadBg">Lead - ${Lead}</div>
-                  </div>
+            <div class="col-md-12">
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-md-2 col-4">
+                        <label for="${Party}" class="col-form-label progressLabel">${Party}</label>
+                    </div>
+                    <div class="col-md-10 col-8">
+                        <div class="progress-stacked">
+                            <div class="progress won" role="progressbar" aria-label="Segment one" aria-valuenow="${winPercentage}" aria-valuemin="0" aria-valuemax="100" style="width: ${winPercentage}%">
+                                <div class="progress-bar wonBar ${winColor}">Won - ${Won}</div>
+                            </div>
+                            <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="${leadPercentage}" aria-valuemin="0" aria-valuemax="100" style="width: ${leadPercentage}%">
+                                <div class="progress-bar leadBg">Lead - ${Lead}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         `;
     }
   }
 
   // Fetch data initially and then every 5000ms
   setData();
-  setInterval(setData, 5000);
+  setInterval(setData, 1500);
 
   // States Trends
   var data; // Define data in the global scope
@@ -168,7 +186,7 @@ $(document).ready(function () {
 
       // Create a column for party name
       var partyNameCol = document.createElement("div");
-      partyNameCol.classList.add("col-md-6", "col-5", "party-name"); // Added "col-6" here
+      partyNameCol.classList.add("col-md-5", "col-5", "party-name"); // Added "col-6" here
       var partyName = document.createElement("p");
       partyName.innerText = item.Party;
       partyNameCol.appendChild(partyName);
@@ -178,11 +196,11 @@ $(document).ready(function () {
       statusCol.classList.add("col-md-6", "col-7", "status-icon"); // Added "col-6" here
       var statusImg = document.createElement("img");
       statusImg.classList.add("img-fluid");
-      if (item.Status === "LEADING") {
-        statusImg.src = "/assets/images/leading.png";
+      if (item.Status.trim().toUpperCase() === "LEADING") {
+        statusImg.src = "assets/images/leading.png";
         statusImg.alt = "Leading Icon";
       } else {
-        statusImg.src = "/assets/images/trailing.png";
+        statusImg.src = "assets/images/trailing.png";
         statusImg.alt = "Trailing Icon";
       }
       statusCol.appendChild(statusImg);
@@ -203,6 +221,10 @@ $(document).ready(function () {
 
   // Fetch data and populate dropdown on page load
   fetchData();
+
+  $(".icon_pos").on("click", function () {
+    $(".form-select").click();
+  });
 
   // States Trends
 
